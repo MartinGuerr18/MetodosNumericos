@@ -5,6 +5,8 @@ import mx.ude.itses.JMTG.MetodosNumericos.domain.Biseccion;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.NewtonRaphson;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.PuntoFijo;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.ReglaFalsa;
+import mx.ude.itses.JMTG.MetodosNumericos.domain.Secante;
+import mx.ude.itses.JMTG.MetodosNumericos.domain.SecanteModificado;
 
 public interface UnidadIIService {
 
@@ -14,5 +16,9 @@ public interface UnidadIIService {
 
     ArrayList<PuntoFijo> AlgoritmoPuntoFijo(PuntoFijo puntoFijo);
 
-    ArrayList<NewtonRaphson> AlgoritmoNewtonRaphson(NewtonRaphson newtonRaphson);// <-- NUEVO
+    ArrayList<NewtonRaphson> AlgoritmoNewtonRaphson(NewtonRaphson newtonRaphson);
+
+    ArrayList<Secante> AlgoritmoSecante(Secante secante);
+
+    ArrayList<SecanteModificado> AlgoritmoSecanteModificado(SecanteModificado secanteModificado);// <-- NUEVO
 }

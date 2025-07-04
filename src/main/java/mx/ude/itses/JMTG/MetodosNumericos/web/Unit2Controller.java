@@ -6,6 +6,8 @@ import mx.ude.itses.JMTG.MetodosNumericos.domain.Biseccion;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.NewtonRaphson;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.PuntoFijo;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.ReglaFalsa;
+import mx.ude.itses.JMTG.MetodosNumericos.domain.Secante;
+import mx.ude.itses.JMTG.MetodosNumericos.domain.SecanteModificado;
 import mx.ude.itses.JMTG.MetodosNumericos.services.Funciones;
 import mx.ude.itses.JMTG.MetodosNumericos.services.UnidadIIService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +86,34 @@ public String solveNewtonRaphson(NewtonRaphson newtonRaphson, Model model) {
     var solvenewtonraphson = bisectionservice.AlgoritmoNewtonRaphson(newtonRaphson);
     model.addAttribute("solvenewtonraphson", solvenewtonraphson);
     return "unit2/newtonraphson/solvenewtonraphson";
+}
+
+@GetMapping("/unit2/formsecante")
+public String formSecante(Model model) {
+    Secante secante = new Secante();
+    model.addAttribute("secante", secante);
+    return "unit2/secante/formsecante";
+}
+
+@PostMapping("/unit2/solvesecante")
+public String solveSecante(Secante secante, Model model) {
+    var solvesecante = bisectionservice.AlgoritmoSecante(secante);
+    model.addAttribute("solvesecante", solvesecante);
+    return "unit2/secante/solvesecante";
+}
+
+@GetMapping("/unit2/formsecantemodificado")
+public String formSecanteModificado(Model model) {
+    SecanteModificado secanteModificado = new SecanteModificado();
+    model.addAttribute("secanteModificado", secanteModificado);
+    return "unit2/secantemodificado/formsecantemodificado";
+}
+
+@PostMapping("/unit2/solvesecantemodificado")
+public String solveSecanteModificado(SecanteModificado secanteModificado, Model model) {
+    var solvesecantemodificado = bisectionservice.AlgoritmoSecanteModificado(secanteModificado);
+    model.addAttribute("solvesecantemodificado", solvesecantemodificado);
+    return "unit2/secantemodificado/solvesecantemodificado";
 }
 
 

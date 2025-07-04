@@ -6,6 +6,8 @@ import mx.ude.itses.JMTG.MetodosNumericos.domain.Biseccion;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.NewtonRaphson;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.PuntoFijo;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.ReglaFalsa;
+import mx.ude.itses.JMTG.MetodosNumericos.domain.Secante;
+import mx.ude.itses.JMTG.MetodosNumericos.domain.SecanteModificado;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -170,5 +172,76 @@ public class UnidadIIServiceImpl implements UnidadIIService {
 
         return resultado;
     }
+    
+    @Override
+public ArrayList<Secante> AlgoritmoSecante(Secante datos) {
+    ArrayList<Secante> resultado = new ArrayList<>();
+    double Xi_1 = datos.getXi_1();
+    double Xi = datos.getXi();
+    double Xn = Xi;
+    double Ea = 100;
+
+    for (int i = 1; i <= datos.getIteracionesMaximas(); i++) {
+        double Fxi_1 = Funciones.Ecuacion(datos.getFX(), Xi_1);
+        double Fxi = Funciones.Ecuacion(datos.getFX(), Xi);
+
+        if ((Fxi - Fxi_1) == 0) break; // evita división por cero
+
+        Xn = Xi - (Fxi * (Xi_1 - Xi)) / (Fxi_1 - Fxi);
+
+        Ea = i == 1 ? 100 : Funciones.ErrorRelativo(Xn, Xi);
+
+        Secante fila = new Secante();
+        fila.setXi_1(Xi_1);
+        fila.setXi(Xi);
+        fila.setXn(Xn);
+        fila.setFxi_1(Fxi_1);
+        fila.setFxi(Fxi);
+        fila.setEa(Ea);
+        resultado.add(fila);
+
+        if (Ea <= datos.getEaPermitido()) break;
+
+        Xi_1 = Xi;
+        Xi = Xn;
+    }
+
+    return resultado;
+}
+
+@Override
+public ArrayList<SecanteModificado> AlgoritmoSecanteModificado(SecanteModificado datos) {
+    ArrayList<SecanteModificado> resultado = new ArrayList<>();
+    double Xi = datos.getXi();
+    double Xn = Xi;
+    double Ea = 100;
+
+    double h = 1e-5; // incremento pequeño
+
+    for (int i = 1; i <= datos.getIteracionesMaximas(); i++) {
+        double Fxi = Funciones.Ecuacion(datos.getFX(), Xi);
+        double dFXi = (Funciones.Ecuacion(datos.getFX(), Xi + h) - Fxi) / h;
+
+        if (dFXi == 0) break;
+
+        Xn = Xi - Fxi / dFXi;
+        Ea = i == 1 ? 100 : Funciones.ErrorRelativo(Xn, Xi);
+
+        SecanteModificado fila = new SecanteModificado();
+        fila.setXi(Xi);
+        fila.setXn(Xn);
+        fila.setFxi(Fxi);
+        fila.setDFXi(dFXi);
+        fila.setEa(Ea);
+        resultado.add(fila);
+
+        if (Ea <= datos.getEaPermitido()) break;
+
+        Xi = Xn;
+    }
+
+    return resultado;
+}
+
 
 }
