@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Métodos Numéricos - Interpolación</title>
+
+        <!-- Bootstrap CSS -->
+        <link 
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
+            rel="stylesheet" 
+            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
+            crossorigin="anonymous"
+            >
+        <!-- Bootstrap JS and dependencies -->
+        <script 
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+            crossorigin="anonymous"
+        ></script>
+    </head>
+    <body>
+        <div class="container">
+            <nav th:replace="~{/layout/template :: menu}"> </nav>
+            <div th:replace="~{/layout/template :: bannerunit4}"></div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Interpolación Polinomial</li>
+                </ol>
+            </nav>
+            <div class="container">
+                <h1 class="text">Interpolación Polinomial</h1>
+                <p>La interpolación polinomial es una técnica fundamental en análisis numérico que permite estimar valores intermedios entre datos conocidos. 
+                   Esta técnica es especialmente útil cuando se tienen mediciones discretas de un fenómeno y se desea conocer su comportamiento en puntos no medidos.</p>
+                <br>
+                <p>En ingeniería y ciencias aplicadas, la interpolación se utiliza en diversas áreas como el procesamiento de señales, 
+                   el análisis de datos experimentales, la generación de curvas suaves a partir de puntos discretos y la resolución de ecuaciones diferenciales.</p>
+                <br>
+                <h2>MÉTODOS DE INTERPOLACIÓN POLINOMIAL</h2>
+                <h3 class="text">Técnicas de interpolación</h3>
+                
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-2">
+                        <a class="nav-link active" aria-current="page" href="/unit4/formddnewton">
+                            <strong>Diferencias Divididas de Newton</strong><br>
+                            <small class="text-light">Método que construye un polinomio de interpolación usando diferencias divididas progresivas</small>
+                        </a> 
+                    </li>
+                    <li class="nav-item mt-2">
+                        <a class="nav-link active" aria-current="page" href="/unit4/formlagrange">
+                            <strong>Polinomio de Interpolación de Lagrange</strong><br>
+                            <small class="text-light">Método que construye el polinomio como una combinación lineal de polinomios base de Lagrange</small>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5>Aplicaciones de la Interpolación</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Análisis de datos experimentales</li>
+                                    <li>Generación de curvas suaves</li>
+                                    <li>Reconstrucción de señales</li>
+                                    <li>Estimación de valores intermedios</li>
+                                    <li>Integración y diferenciación numérica</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5>Consideraciones Importantes</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>El grado del polinomio aumenta con el número de puntos</li>
+                                    <li>Polinomios de alto grado pueden presentar oscilaciones</li>
+                                    <li>La interpolación es exacta en los puntos conocidos</li>
+                                    <li>La precisión disminuye al alejarse de los puntos base</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html> 

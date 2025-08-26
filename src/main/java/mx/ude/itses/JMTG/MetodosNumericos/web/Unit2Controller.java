@@ -1,6 +1,5 @@
 package mx.ude.itses.JMTG.MetodosNumericos.web;
 
-import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.Biseccion;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.NewtonRaphson;
@@ -8,13 +7,11 @@ import mx.ude.itses.JMTG.MetodosNumericos.domain.PuntoFijo;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.ReglaFalsa;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.Secante;
 import mx.ude.itses.JMTG.MetodosNumericos.domain.SecanteModificado;
-import mx.ude.itses.JMTG.MetodosNumericos.services.Funciones;
 import mx.ude.itses.JMTG.MetodosNumericos.services.UnidadIIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
@@ -23,6 +20,11 @@ public class Unit2Controller {
 
     @Autowired
     private UnidadIIService bisectionservice;
+    
+    @GetMapping("/unit_2")
+    public String index(Model model) {
+        return "unit_2/index";
+    }
 
     @GetMapping("unit2/formbisection")
     public String formBisection(Model model) {

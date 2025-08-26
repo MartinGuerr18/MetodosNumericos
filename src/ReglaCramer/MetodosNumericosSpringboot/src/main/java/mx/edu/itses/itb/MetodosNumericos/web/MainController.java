@@ -1,4 +1,4 @@
-package mx.ude.itses.JMTG.MetodosNumericos.web;
+package mx.edu.itses.itb.MetodosNumericos.web;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -16,4 +16,5 @@ public class MainController {
         return "index";
     }
     
+   
 }
