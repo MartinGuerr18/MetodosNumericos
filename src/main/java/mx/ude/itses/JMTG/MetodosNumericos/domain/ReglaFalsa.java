@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ReglaFalsa {
+    private String FX; //funcion a evaluar
     private double XL;
     private double XU;
     private double XR;
@@ -11,7 +12,5 @@ public class ReglaFalsa {
     private double FXU;
     private double FXR;
     private double Ea;
-    private double EaPermitido;
-    private int iteracionesMaximas;
-    private String FX;
+    private int IteracionesMaximas;   
 }

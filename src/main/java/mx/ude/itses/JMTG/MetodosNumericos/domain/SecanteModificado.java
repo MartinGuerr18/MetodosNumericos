@@ -4,12 +4,15 @@ import lombok.Data;
 
 @Data
 public class SecanteModificado {
-    private double Xi;
-    private double Xn;
-    private double Fxi;
-    private double dFXi;
-    private double Ea;
-    private double EaPermitido;
-    private int IteracionesMaximas;
-    private String FX;
+     private double xiAnterior;
+    private double xi;
+    private double fxAnterior;
+    private double fx;
+    private double xr;
+    private double ea;
+    private int iteracion;
+    private int iteracionesMaximas;
+    private double tolerancia;
+    private String funcion;
+    private double delta;
 }

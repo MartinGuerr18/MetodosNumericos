@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class Biseccion {
-    private String FX;
+
+    private String FX; //funcion a evaluar
     private double XL;
     private double XU;
     private double XR;
@@ -12,6 +13,5 @@ public class Biseccion {
     private double FXU;
     private double FXR;
     private double Ea;
-    private int IteracionesMaximas;
-              
+    private int IteracionesMaximas;   
 }

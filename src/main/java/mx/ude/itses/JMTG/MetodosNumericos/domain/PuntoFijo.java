@@ -4,11 +4,11 @@ import lombok.Data;
 
 @Data
 public class PuntoFijo {
-    private double Xi;
-    private double Xn;
-    private double GXi;
-    private double Ea;
-    private double EaPermitido;
-    private int IteracionesMaximas;
-    private String GX;
+    private double xi;
+    private String gx;
+    private double ea;
+    private int iteracionesMaximas;
+    private double xr;
+    private double errorAprox;
+   private int iteracion;
 }

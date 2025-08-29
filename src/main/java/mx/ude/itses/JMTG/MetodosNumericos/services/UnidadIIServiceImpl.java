@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class UnidadIIServiceImpl implements UnidadIIService {
-
-    @Override
+ @Override
     public ArrayList<Biseccion> AlgoritmoBiseccion(Biseccion biseccion) {
         ArrayList<Biseccion> respuesta = new ArrayList<>();
         double XL, XU, XRa, XRn, FXL, FXU, FXR, Ea;
@@ -66,182 +65,246 @@ public class UnidadIIServiceImpl implements UnidadIIService {
     }
 
     @Override
-    public ArrayList<ReglaFalsa> AlgoritmoReglaFalsa(ReglaFalsa datos) {
-        ArrayList<ReglaFalsa> resultado = new ArrayList<>();
-        double XL = datos.getXL();
-        double XU = datos.getXU();
-        double XRn, XRa = 0;
-        double Ea = 100;
+    public ArrayList<ReglaFalsa> AlgoritmoReglaFalsa(ReglaFalsa reglafalsa) {
+        ArrayList<ReglaFalsa> respuesta = new ArrayList<>();
+        double XL, XU, XRa, XRn, FXL, FXU, FXR, Ea;
 
-        for (int i = 1; i <= datos.getIteracionesMaximas(); i++) {
-            double FXL = Funciones.Ecuacion(datos.getFX(), XL);
-            double FXU = Funciones.Ecuacion(datos.getFX(), XU);
-            XRn = XU - (FXU * (XL - XU)) / (FXL - FXU);
-            double FXR = Funciones.Ecuacion(datos.getFX(), XRn);
+        XL = reglafalsa.getXL();
+        XU = reglafalsa.getXU();
+        XRa = 0;
+        Ea = 100;
+        // Verificamos que en el intervalo definido haya un cambio de signo
+        FXL = Funciones.Ecuacion(reglafalsa.getFX(), XL);
+        FXU = Funciones.Ecuacion(reglafalsa.getFX(), XU);
+
+        if (FXL * FXU < 0) {
+            for (int i = 1; i <= reglafalsa.getIteracionesMaximas(); i++) {
+                XRn = XU - (FXU * (XL - XU)) / (FXL - FXU);
+                FXL = Funciones.Ecuacion(reglafalsa.getFX(), XL);
+                FXU = Funciones.Ecuacion(reglafalsa.getFX(), XU);
+                FXR = Funciones.Ecuacion(reglafalsa.getFX(), XRn);
+                if (i != 1) {
+                    Ea = Funciones.ErrorRelativo(XRn, XRa);
+                }
+                ReglaFalsa renglon = new ReglaFalsa();
+                renglon.setXL(XL);
+                renglon.setXU(XU);
+                renglon.setXR(XRn);
+                renglon.setFXL(FXL);
+                renglon.setFXU(FXU);
+                renglon.setFXR(FXR);
+                renglon.setEa(Ea);
+                if (FXL * FXR < 0) {
+                    XU = XRn;
+                } else if (FXL * FXR > 0) {
+                    XL = XRn;
+                } else if (FXL * FXR == 0) {
+                    break;
+                }
+                XRa = XRn;
+                respuesta.add(renglon);
+                if (Ea <= reglafalsa.getEa()) {
+                    break;
+                }
+            }
+        } else {
+            ReglaFalsa renglon = new ReglaFalsa();
+            // renglon.setIntervaloInvalido(true);
+            respuesta.add(renglon);
+        }
+
+        return respuesta;
+
+    }
+
+    @Override
+    public ArrayList<PuntoFijo> AlgoritmoPuntoFijo(PuntoFijo puntofijo) {
+        ArrayList<PuntoFijo> respuesta = new ArrayList<>();
+        double xi, xr, Ea;
+        double errorAprox = 100;
+        int iterMax = puntofijo.getIteracionesMaximas();
+
+        xi = puntofijo.getXi();
+        Ea = puntofijo.getEa();
+
+        for (int i = 1; i <= iterMax; i++) {
+            xr = Funciones.EvaluarG(puntofijo.getGx(), xi);  // g(xi)
 
             if (i != 1) {
-                Ea = Funciones.ErrorRelativo(XRn, XRa);
+                errorAprox = Funciones.ErrorRelativo(xr, xi);
+                if (Double.isNaN(errorAprox)) {
+                    log.error("Error relativo inválido en iteración {}. xi={}, xr={}", i, xi, xr);
+                    break;
+                }
             }
 
-            ReglaFalsa fila = new ReglaFalsa();
-            fila.setXL(XL);
-            fila.setXU(XU);
-            fila.setXR(XRn);
-            fila.setFXL(FXL);
-            fila.setFXU(FXU);
-            fila.setFXR(FXR);
-            fila.setEa(Ea);
-            resultado.add(fila);
+            PuntoFijo paso = new PuntoFijo();
+            paso.setXi(xi);
+            paso.setXr(xr);
+            paso.setEa(errorAprox);
+            paso.setGx(puntofijo.getGx());
+            paso.setIteracionesMaximas(iterMax);
+            respuesta.add(paso);
 
-            if (FXL * FXR < 0) {
-                XU = XRn;
-            } else {
-                XL = XRn;
-            }
-
-            XRa = XRn;
-
-            if (Ea <= datos.getEaPermitido()) {
+            if (errorAprox <= Ea) {
                 break;
             }
+
+            xi = xr;
         }
 
-        return resultado;
+        return respuesta;
     }
 
     @Override
-    public ArrayList<PuntoFijo> AlgoritmoPuntoFijo(PuntoFijo datos) {
-        ArrayList<PuntoFijo> resultado = new ArrayList<>();
-        double Xi = datos.getXi();
-        double Xn, Ea = 100;
+    public ArrayList<NewtonRaphson> AlgoritmoNewtonRaphson(NewtonRaphson newtonraphson) {
+        ArrayList<NewtonRaphson> respuesta = new ArrayList<>();
 
-        for (int i = 1; i <= datos.getIteracionesMaximas(); i++) {
-            Xn = Funciones.Ecuacion(datos.getGX(), Xi);
-            Ea = i == 1 ? 100 : Funciones.ErrorRelativo(Xn, Xi);
-
-            PuntoFijo fila = new PuntoFijo();
-            fila.setXi(Xi);
-            fila.setXn(Xn);
-            fila.setGXi(Funciones.Ecuacion(datos.getGX(), Xi));
-            fila.setEa(Ea);
-            resultado.add(fila);
-
-            Xi = Xn;
-
-            if (Ea <= datos.getEaPermitido()) {
-                break;
-            }
-        }
-
-        return resultado;
-    }
-
-    @Override
-    public ArrayList<NewtonRaphson> AlgoritmoNewtonRaphson(NewtonRaphson datos) {
-        ArrayList<NewtonRaphson> resultado = new ArrayList<>();
-        double Xi = datos.getXi();
-        double Xn = Xi;
+        double XI = newtonraphson.getXI();
+        //double XR = 0;
         double Ea = 100;
+        String FX = newtonraphson.getFX();
 
-        for (int i = 1; i <= datos.getIteracionesMaximas(); i++) {
-            double Fxi = Funciones.Ecuacion(datos.getFX(), Xi);
-            double Fdxi = Funciones.Ecuacion(datos.getDFX(), Xi);
+        for (int i = 1; i <= newtonraphson.getIteracionesMaximas(); i++) {
+            double FXi = Funciones.Ecuacion(FX, XI);
+            double FDXi = Funciones.Derivada(FX, XI);
 
-            if (Fdxi == 0) {
-                // Derivada cero, no se puede dividir
+            if (FDXi == 0) {
+                System.err.println("Error: Derivada es cero en XI = " + XI + ". No se puede continuar.");
+                break;
+            }
+            double XR = XI - (FXi / FDXi);
+
+            if (i != 1) {
+                Ea = Funciones.ErrorRelativo(XR, XI);
+            }
+
+            NewtonRaphson renglon = new NewtonRaphson();
+            renglon.setXI(XI);
+            renglon.setFX(String.valueOf(FXi));
+            renglon.setFDX(String.valueOf(FDXi));
+            //renglon.setFDX(FDX);
+            //renglon.setFX(FX);
+            renglon.setXR(XR);
+            renglon.setEa(Ea);
+            renglon.setIteracion(i);
+            respuesta.add(renglon);
+            if (Ea <= newtonraphson.getEa()) {
                 break;
             }
 
-            Xn = Xi - (Fxi / Fdxi);
-            Ea = i == 1 ? 100 : Funciones.ErrorRelativo(Xn, Xi);
-
-            NewtonRaphson fila = new NewtonRaphson();
-            fila.setXi(Xi);
-            fila.setXn(Xn);
-            fila.setFxi(Fxi);
-            fila.setFdxi(Fdxi);
-            fila.setEa(Ea);
-            resultado.add(fila);
-
-            Xi = Xn;
-
-            if (Ea <= datos.getEaPermitido()) {
-                break;
-            }
+            XI = XR;
         }
+        return respuesta;
+    }
 
+    @Override
+    public ArrayList<Secante> AlgoritmoSecante(Secante secante) {
+        ArrayList<Secante> resultado = new ArrayList<>();
+
+        double xi0 = secante.getXiAnterior();
+        System.out.println("Valor xi-1 recibido: " + secante.getXiAnterior());
+
+        double xi1 = secante.getXi();
+        double ea = 100;
+        int iteraciones = secante.getIteracionesMaximas();
+        double tolerancia = secante.getTolerancia();
+        String funcion = secante.getFuncion();
+
+        for (int i = 1; i <= iteraciones; i++) {
+            double fx0 = Funciones.Ecuacion(funcion, xi0);
+            double fx1 = Funciones.Ecuacion(funcion, xi1);
+
+            if ((fx1 - fx0) == 0) {
+                break;
+            }
+
+            double numerador = fx1 * (xi1 - xi0);
+            double denominador = fx1 - fx0;
+            double xr = xi1 - numerador / denominador;
+
+            if (i > 1) {
+                ea = Funciones.ErrorRelativo(xr, xi1);
+            }
+
+            Secante renglon = new Secante();
+            renglon.setIteracion(i);
+            renglon.setXiAnterior(xi0);
+            renglon.setXi(xi1);
+            renglon.setFxAnterior(fx0);
+            renglon.setFx(fx1);
+            renglon.setXr(xr);
+            renglon.setEa(ea);
+            renglon.setTolerancia(tolerancia);
+            renglon.getIteracionesMaximas();
+            renglon.setFuncion(funcion);
+
+            resultado.add(renglon);
+
+            if (ea <= tolerancia) {
+                break;
+            }
+
+            xi0 = xi1;
+            xi1 = xr;
+        }
         return resultado;
     }
-    
+
     @Override
-public ArrayList<Secante> AlgoritmoSecante(Secante datos) {
-    ArrayList<Secante> resultado = new ArrayList<>();
-    double Xi_1 = datos.getXi_1();
-    double Xi = datos.getXi();
-    double Xn = Xi;
-    double Ea = 100;
-
-    for (int i = 1; i <= datos.getIteracionesMaximas(); i++) {
-        double Fxi_1 = Funciones.Ecuacion(datos.getFX(), Xi_1);
-        double Fxi = Funciones.Ecuacion(datos.getFX(), Xi);
-
-        if ((Fxi - Fxi_1) == 0) break; // evita división por cero
-
-        Xn = Xi - (Fxi * (Xi_1 - Xi)) / (Fxi_1 - Fxi);
-
-        Ea = i == 1 ? 100 : Funciones.ErrorRelativo(Xn, Xi);
-
-        Secante fila = new Secante();
-        fila.setXi_1(Xi_1);
-        fila.setXi(Xi);
-        fila.setXn(Xn);
-        fila.setFxi_1(Fxi_1);
-        fila.setFxi(Fxi);
-        fila.setEa(Ea);
-        resultado.add(fila);
-
-        if (Ea <= datos.getEaPermitido()) break;
-
-        Xi_1 = Xi;
-        Xi = Xn;
-    }
-
-    return resultado;
-}
-
-@Override
-public ArrayList<SecanteModificado> AlgoritmoSecanteModificado(SecanteModificado datos) {
+    public ArrayList<SecanteModificado> AlgoritmoSecanteModificado(SecanteModificado secantemodificado) {
     ArrayList<SecanteModificado> resultado = new ArrayList<>();
-    double Xi = datos.getXi();
-    double Xn = Xi;
-    double Ea = 100;
 
-    double h = 1e-5; // incremento pequeño
+    double xi = secantemodificado.getXi();
+    double delta = secantemodificado.getDelta();
+    double ea = 100;
+    int iteracionesMaximas = secantemodificado.getIteracionesMaximas();
+    double tolerancia = secantemodificado.getTolerancia();
+    String funcion = secantemodificado.getFuncion();
 
-    for (int i = 1; i <= datos.getIteracionesMaximas(); i++) {
-        double Fxi = Funciones.Ecuacion(datos.getFX(), Xi);
-        double dFXi = (Funciones.Ecuacion(datos.getFX(), Xi + h) - Fxi) / h;
+    System.out.println("Valor xi inicial recibido: " + xi);
+    System.out.println("Valor delta recibido: " + delta);
 
-        if (dFXi == 0) break;
+    for (int i = 1; i <= iteracionesMaximas; i++) {
+        double fxi = Funciones.Ecuacion(funcion, xi);
+        double fxiDelta = Funciones.Ecuacion(funcion, xi + delta * xi);
 
-        Xn = Xi - Fxi / dFXi;
-        Ea = i == 1 ? 100 : Funciones.ErrorRelativo(Xn, Xi);
+        double denominador = (fxiDelta - fxi) / (delta * xi);
 
-        SecanteModificado fila = new SecanteModificado();
-        fila.setXi(Xi);
-        fila.setXn(Xn);
-        fila.setFxi(Fxi);
-        fila.setDFXi(dFXi);
-        fila.setEa(Ea);
-        resultado.add(fila);
+        if (denominador == 0 || Double.isInfinite(fxi) || Double.isNaN(fxi) ||
+            Double.isInfinite(fxiDelta) || Double.isNaN(fxiDelta)) {
+            System.out.println("División por cero o valor de función inválido. Deteniendo iteraciones.");
+            break;
+        }
 
-        if (Ea <= datos.getEaPermitido()) break;
+        double xr = xi - (fxi / denominador);
 
-        Xi = Xn;
+        if (i > 1) {
+            ea = Funciones.ErrorRelativo(xr, xi);
+        }
+
+        SecanteModificado renglon = new SecanteModificado();
+        renglon.setIteracion(i);
+        renglon.setXi(xi);
+        renglon.setXiAnterior(0.0);
+        renglon.setFx(fxi);
+        renglon.setFxAnterior(fxiDelta);
+        renglon.setXr(xr);
+        renglon.setEa(ea);
+        renglon.setTolerancia(tolerancia);
+        renglon.setIteracionesMaximas(iteracionesMaximas);
+        renglon.setFuncion(funcion);
+        renglon.setDelta(delta);
+
+        resultado.add(renglon);
+
+        if (ea <= tolerancia) {
+            break;
+        }
+
+        xi = xr;
     }
 
     return resultado;
 }
-
-
 }
